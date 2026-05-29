@@ -2,7 +2,6 @@ package com.example;
 
 import java.time.LocalDate;
 
-// Класс, представляющий книгу в библиотеке
 public class Book {
     private String isbn;
     private String title;
@@ -18,7 +17,6 @@ public class Book {
     private int pageCount;
     private int audioLength;
 
-    // Конструктор книги
     public Book(String isbn, String title, String author, String genre, String format) {
         this.isbn = isbn;
         this.title = title;
@@ -33,7 +31,6 @@ public class Book {
         this.audioLength = 0;
     }
 
-    // Геттеры
     public String getIsbn() { return isbn; }
     public String getTitle() { return title; }
     public String getAuthor() { return author; }
@@ -48,7 +45,6 @@ public class Book {
     public int getPageCount() { return pageCount; }
     public int getAudioLength() { return audioLength; }
 
-    // Сеттеры
     public void setStatus(String status) { this.status = status; }
     public void setRating(int rating) { this.rating = rating; }
     public void setReview(String review) { this.review = review; }
@@ -57,7 +53,6 @@ public class Book {
     public void setPageCount(int pageCount) { this.pageCount = pageCount; }
     public void setAudioLength(int audioLength) { this.audioLength = audioLength; }
 
-    // Форматированный вывод книги
     @Override
     public String toString() {
         String formatPrefix;

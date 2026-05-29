@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.net.http.*;
 import java.net.URI;
 
-// Менеджер библиотеки - основной класс управления
 public class LibraryManager {
     private List<Book> books;
     private HttpClient httpClient;
@@ -17,7 +16,6 @@ public class LibraryManager {
         httpClient = HttpClient.newHttpClient();
     }
 
-    // Запрос к Google Books API для получения данных по ISBN
     private Map<String, String> fetchBookFromGoogleBooks(String isbn) {
         try {
             String apiKey = "AIzaSyCu6fGINP2ztpT8mqfLd4Df0oKhFrhkUss";
@@ -63,7 +61,6 @@ public class LibraryManager {
         return null;
     }
 
-    // Парсинг JSON: извлечение значения по ключу
     private String extractJsonValue(String json, String key) {
         String searchKey = "\"" + key + "\"";
         int keyIndex = json.indexOf(searchKey);
@@ -81,7 +78,6 @@ public class LibraryManager {
         return json.substring(valueStart + 1, valueEnd);
     }
 
-    // Парсинг JSON: извлечение первого элемента из массива
     private String extractJsonArrayFirstValue(String json, String key) {
         String searchKey = "\"" + key + "\"";
         int keyIndex = json.indexOf(searchKey);
@@ -102,7 +98,6 @@ public class LibraryManager {
         return json.substring(valueStart + 1, valueEnd);
     }
 
-    // Добавление книги по ISBN через API
     public void addBookByIsbn(Scanner scanner) {
         System.out.print("Введите ISBN: ");
         String isbn = scanner.nextLine();
@@ -134,7 +129,6 @@ public class LibraryManager {
         }
     }
 
-    // Ручное добавление книги
     public void addBookManually(Scanner scanner) {
         System.out.print("Введите ISBN (или 0 для пропуска): ");
         String isbn = scanner.nextLine();
@@ -178,7 +172,58 @@ public class LibraryManager {
         System.out.println("Книга добавлена");
     }
 
-    // Поиск книг по названию, автору или жанру
+    // Удаление книги по названию
+    public void deleteBook(Scanner scanner) {
+        if (books.isEmpty()) {
+            System.out.println("Библиотека пуста. Нечего удалять.");
+            return;
+        }
+
+        System.out.println("\nСПИСОК КНИГ ДЛЯ УДАЛЕНИЯ:");
+        for (int i = 0; i < books.size(); i++) {
+            System.out.println((i + 1) + ". " + books.get(i).getTitle() + " - " + books.get(i).getAuthor());
+        }
+
+        System.out.print("\nВведите название книги для удаления: ");
+        String title = scanner.nextLine();
+
+        Book bookToDelete = findBookByTitle(title);
+
+        if (bookToDelete != null) {
+            books.remove(bookToDelete);
+            System.out.println("Книга \"" + title + "\" удалена из библиотеки");
+        } else {
+            System.out.println("Книга с названием \"" + title + "\" не найдена");
+        }
+    }
+
+    // Удаление книги по индексу (номеру в списке)
+    public void deleteBookByIndex(Scanner scanner) {
+        if (books.isEmpty()) {
+            System.out.println("Библиотека пуста. Нечего удалять.");
+            return;
+        }
+
+        System.out.println("\nСПИСОК КНИГ:");
+        for (int i = 0; i < books.size(); i++) {
+            System.out.println((i + 1) + ". " + books.get(i));
+        }
+
+        System.out.print("\nВведите номер книги для удаления: ");
+        try {
+            int index = Integer.parseInt(scanner.nextLine()) - 1;
+
+            if (index >= 0 && index < books.size()) {
+                Book removedBook = books.remove(index);
+                System.out.println("Книга \"" + removedBook.getTitle() + "\" удалена из библиотеки");
+            } else {
+                System.out.println("Неверный номер. Введите число от 1 до " + books.size());
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Введите корректный номер");
+        }
+    }
+
     public void searchBooks(Scanner scanner) {
         System.out.print("Поиск по (название/автор/жанр): ");
         String query = scanner.nextLine().toLowerCase();
@@ -199,7 +244,6 @@ public class LibraryManager {
         }
     }
 
-    // Фильтрация книг по статусу чтения
     public void filterByStatus() {
         System.out.println("\nФильтрация по статусам:");
         String[] statuses = {"Прочитано", "В процессе", "В планах"};
@@ -213,7 +257,6 @@ public class LibraryManager {
         }
     }
 
-    // Обновление статуса чтения книги
     public void updateStatus(Scanner scanner) {
         System.out.print("Введите название книги: ");
         String title = scanner.nextLine();
@@ -241,7 +284,6 @@ public class LibraryManager {
         }
     }
 
-    // Статистика и аналитика библиотеки
     public void showAnalytics() {
         if (books.isEmpty()) {
             System.out.println("Библиотека пуста");
@@ -272,7 +314,6 @@ public class LibraryManager {
                 .limit(5)
                 .forEach(e -> System.out.println("  " + e.getKey() + ": " + e.getValue()));
 
-        // Потерянные книги - в планах более 3 месяцев
         long lostBooks = books.stream()
                 .filter(b -> b.getStatus().equals("В планах"))
                 .filter(b -> ChronoUnit.MONTHS.between(b.getDateAdded(), LocalDate.now()) > 3)
@@ -282,7 +323,6 @@ public class LibraryManager {
         }
     }
 
-    // Поиск книги по названию
     private Book findBookByTitle(String title) {
         return books.stream()
                 .filter(b -> b.getTitle().equalsIgnoreCase(title))
@@ -290,7 +330,6 @@ public class LibraryManager {
                 .orElse(null);
     }
 
-    // Вывод всех книг в библиотеке
     public void showAllBooks() {
         if (books.isEmpty()) {
             System.out.println("\nБиблиотека пуста");
@@ -303,7 +342,6 @@ public class LibraryManager {
         }
     }
 
-    // Добавление демонстрационных книг для тестирования
     public void addDemoBooks() {
         Book demo1 = new Book("9780134685991", "Effective Java", "Джошуа Блох", "Программирование", "бумажная");
         demo1.setStatus("Прочитано");
@@ -325,11 +363,16 @@ public class LibraryManager {
         demo4.setAudioLength(660);
         demo4.setDateFinished(LocalDate.now().minusMonths(1));
 
+        Book demo5 = new Book("9780141439895", "Грозовой перевал", "Эмили Бронте", "Классика", "бумажная");
+        demo5.setStatus("В планах");
+        demo5.setPageCount(416);
+
         books.add(demo1);
         books.add(demo2);
         books.add(demo3);
         books.add(demo4);
+        books.add(demo5);
 
-        System.out.println("Добавлены демонстрационные книги (4 шт.)");
+        System.out.println("Добавлены демонстрационные книги (5 шт.)");
     }
 }
